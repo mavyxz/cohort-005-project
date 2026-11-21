@@ -9,7 +9,7 @@ This file reports facts and names no winner. Providers appear in the order the t
 - **Fetch date:** every source was fetched on 2026-11-21. Pricing and SDK versions are as of that date.
 - **Sources:** the providers' own docs, pricing pages, SDK repositories and npm registry metadata. Each claim carries its link.
 - **"Read from source, not run":** behaviour read out of the published SDK code. Nothing was installed into the app, signed up for, or run in a browser. These claims are implementation detail, not a documented contract.
-- **Quotes:** quoted text came through a page-fetching tool that can paraphrase. The free-tier numbers, the React peer ranges and the "no first-party web push" statement for Knock were re-fetched and matched. Other quotes were not double-checked word for word.
+- **Quotes:** quoted text came through a page-fetching tool that can paraphrase. The free-tier numbers on all five pricing pages, the React peer ranges on npm, Firebase's HTTPS sentence and Knock's "no first-party web push" statement were fetched a second time and matched. Other quotes were not double-checked word for word.
 - **The app context used to judge fit:** React Router 8.3 framework mode (server-rendered), React 19.2, local development on `http://localhost` only, one browser where the DevUI panel switches the signed-in person, no public URL for a provider to call.
 
 ## Summary table
@@ -173,7 +173,7 @@ A WebSocket the browser opens to Novu. "The `useNotifications` and `useCounts` h
 
 ### Sending
 
-- `@novu/api`: `novu.trigger({ workflowId, to: [{ subscriberId }], payload })` ([trigger](https://docs.novu.co/platform/workflow/trigger-workflow.md)). A workflow must exist first; Free allows 5.
+- `@novu/api`: `novu.trigger({ workflowId, to: [{ subscriberId }], payload })` ([trigger](https://docs.novu.co/platform/workflow/trigger-workflow.md)). A workflow must exist first; Free allows 5 ([limits](https://docs.novu.co/platform/developer/limits.md)).
 - Bulk: "limited to 100 events per request." ([bulk trigger](https://docs.novu.co/api-reference/events/bulk-trigger-event.md))
 - Topics: "Each topic supports up to 100,000 subscribers", and the `actor` field excludes one subscriber ([topics](https://docs.novu.co/platform/concepts/topics.md)).
 - Digest step: "Novu batches multiple trigger events and executes downstream steps only once per digest window", per subscriber, with an optional extra key ([digest](https://docs.novu.co/platform/workflow/add-and-configure-steps/configure-action-steps/digest.md)). Free caps the window at 1 day.
@@ -193,7 +193,7 @@ Product, Courier Inbox and free plan are all current ([pricing](https://www.cour
 - "The Developer plan is free and includes 10,000 sends a month". "Going over 10,000 requires the Business plan", which needs a card ([pricing](https://www.courier.com/pricing.md)).
 - "One send is one template sent to one recipient." "A multi-channel template counts as one send". Sends from the Test environment count ([pricing](https://www.courier.com/pricing.md)).
 - "The in-app Inbox has no fee of its own." ([pricing](https://www.courier.com/pricing.md))
-- Signup requirements (card, company email, approval): not confirmed. The pricing page lists Google and GitHub sign-in.
+- Signup requirements (card, company email, approval): not confirmed. The pricing page lists "SSO via Google, GitHub" on the Developer plan ([pricing](https://www.courier.com/pricing)).
 
 ### Channels
 
@@ -357,7 +357,7 @@ Not required before a send: the trigger "doesn't require user creation before ha
 - "SuprSend generates the VAPID key pair for you." No Firebase for web ([add a channel](https://docs.suprsend.com/docs/add-a-channel.md)).
 - A `serviceworker.js` at the site root that imports SuprSend's script from a CDN; the VAPID public key goes in the `vapidKey` prop ([React web push](https://docs.suprsend.com/docs/react-webpush.md)).
 - "Web push needs HTTPS. `localhost` is exempt in most browsers, so local development works" ([add a channel](https://docs.suprsend.com/docs/add-a-channel.md)).
-- The docs pin older service worker script versions (4.0.0 and 3.0.3) than the current web SDK (5.5.0).
+- The docs pin older service worker script versions (4.0.0 and 3.0.3) than the current web SDK (5.5.0) ([React web push](https://docs.suprsend.com/docs/react-webpush.md), [JS web push](https://docs.suprsend.com/docs/js-webpush.md), [web SDK repo](https://github.com/suprsend/suprsend-web-sdk)).
 
 ### Inbound webhooks
 
@@ -366,7 +366,7 @@ None described for inbox or web push. With enhanced security on, our server need
 ### Sending
 
 - `@suprsend/node-sdk`: `supr_client.workflows.trigger(new WorkflowTriggerRequest(body))` ([Node trigger](https://docs.suprsend.com/docs/node-trigger-workflow-from-api.md)).
-- "You can add up to 100 recipients in a single API." ([trigger API](https://docs.suprsend.com/reference/trigger-workflow-api.md)). Lists are on Free; Objects are listed on the Business plan.
+- "You can add up to 100 recipients in a single API." ([trigger API](https://docs.suprsend.com/reference/trigger-workflow-api.md)). "Lists & Broadcasts" is on the Free plan card; "Data Modeling: Objects" is on the Business plan card ([pricing](https://www.suprsend.com/pricing)).
 - Batch and digest nodes exist but are "Not included" on Free ([batch](https://docs.suprsend.com/docs/batch.md), [pricing](https://www.suprsend.com/pricing)).
 
 ### Preferences

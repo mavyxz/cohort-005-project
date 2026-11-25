@@ -242,3 +242,15 @@ env default restored, fresh recipient → feed items: 0
 Sarah Chen (2) replied to Emma Wilson's (5) Discussion Question (comment 1, lesson 3) through the real lesson action. The page tokens had sub 2 and sub 5. Emma's feed showed the discussion-reply item. Sarah's feed was empty. Sarah's token on Emma's feed returned 403 authorization.
 
 Expired tokens: a token hand-signed with exp two days in the past still returned 200 on the feed.
+
+## Check 4, category × channel (scripts/knock-prototype-channel-check.ts). This default is the one left in place
+```
+set default {"categories":{"enrollments":{"channel_types":{"in_app_feed":false}}}}
+fresh recipient, default (enrollments × in_app_feed: false) → items: 0
+opt in → 200 {"enrollments":{"channel_types":{"in_app_feed":true}}}
+after opt in → items: 1
+opt out → 200 {"enrollments":{"channel_types":{"in_app_feed":false}}}
+after opt out → items (expect unchanged): 1
+```
+
+Note: rows 3 and 4 ran from Node/curl with the credentials a browser would hold (public key + user token). Nobody has clicked through the /prototype/knock page in a browser yet.

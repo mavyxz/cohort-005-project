@@ -1,0 +1,17 @@
+export {};
+import Knock, { signUserToken } from "@knocklabs/node";
+const knock = new Knock({ apiKey: process.env.KNOCK_API_KEY });
+const mapi = (m: string, p: string, b?: unknown) => fetch(`https://control.knock.app/v1${p}`, { method: m, headers: { Authorization: `Bearer ${process.env.KNOCK_SERVICE_TOKEN}`, "Content-Type": "application/json" }, body: b ? JSON.stringify(b) : undefined }).then(r => r.json());
+const asUser = async (uid: string, m: string, p: string, b?: unknown) => { const t = await signUserToken(uid); const r = await fetch(`https://api.knock.app/v1${p}`, { method: m, headers: { Authorization: `Bearer ${process.env.KNOCK_PUBLIC_API_KEY}`, "X-Knock-User-Token": t, "Content-Type": "application/json" }, body: b ? JSON.stringify(b) : undefined }); return { status: r.status, json: await r.json() }; };
+const count = async (uid: string) => (await asUser(uid, "GET", `/users/${uid}/feeds/${process.env.KNOCK_FEED_CHANNEL_ID}`)).json.entries.length;
+const trig = (uid: string) => knock.workflows.trigger("new-enrollment", { recipients: [{ id: uid, name: "Probe", email: `${uid}@example.com` }], data: { student_name: "Emma Wilson", course_title: "Channel probe", course_url: "/" } });
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+console.log("set default", JSON.stringify((await mapi("PUT", "/environments/development/defaults", { preference_set: { categories: { enrollments: { channel_types: { in_app_feed: false } } } } })).preference_set));
+const uid = `chan-probe-${Date.now()}`;
+await trig(uid); await sleep(8000); console.log("fresh recipient, default (enrollments × in_app_feed: false) → items:", await count(uid));
+const optIn = await asUser(uid, "PUT", `/users/${uid}/preferences/default`, { __persistence_strategy__: "merge", categories: { enrollments: { channel_types: { in_app_feed: true } } } });
+console.log("opt in →", optIn.status, JSON.stringify(optIn.json.categories));
+await trig(uid); await sleep(8000); console.log("after opt in → items:", await count(uid));
+const optOut = await asUser(uid, "PUT", `/users/${uid}/preferences/default`, { __persistence_strategy__: "merge", categories: { enrollments: { channel_types: { in_app_feed: false } } } });
+console.log("opt out →", optOut.status, JSON.stringify(optOut.json.categories));
+await trig(uid); await sleep(8000); console.log("after opt out → items (expect unchanged):", await count(uid));

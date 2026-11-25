@@ -76,6 +76,6 @@ for (const [key, workflow] of Object.entries(workflows)) {
 // Off by default and opt-in: the category is false in the environment default.
 // A user's own preference set merges over it, so an opt-in turns it back on.
 const defaults = await mapi("PUT", `/environments/${ENV}/defaults`, {
-  preference_set: { categories: { enrollments: false } },
+  preference_set: { categories: { enrollments: { channel_types: { in_app_feed: false } } } },
 });
 console.log("environment defaults", JSON.stringify(defaults));

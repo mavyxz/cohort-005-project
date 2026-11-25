@@ -58,6 +58,12 @@ const workflows = {
   },
 };
 
+// Categories must exist in the project-level catalog before a workflow uses them.
+for (const name of ["discussions", "enrollments"]) {
+  const r = await mapi("PUT", `/preference_categories/${name}`);
+  console.log("preference category", r.preference_category?.name);
+}
+
 for (const [key, workflow] of Object.entries(workflows)) {
   const r = await mapi(
     "PUT",

@@ -1,3 +1,4 @@
+export {};
 // PROTOTYPE, throwaway: sets up Knock Development for the spike in
 // "Does Knock hold up against Cadence?" (#24) through the Management API.
 // It needs KNOCK_SERVICE_TOKEN in .env. Run with:

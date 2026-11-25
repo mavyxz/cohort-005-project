@@ -55,6 +55,8 @@ import { data, isRouteErrorResponse } from "react-router";
 import { z } from "zod";
 import { COUNTRIES } from "~/lib/ppp";
 import { parseFormData, parseParams } from "~/lib/validation";
+// PROTOTYPE (Knock spike, #24): throwaway trigger seam
+import { triggerDiscussionReply } from "~/lib/knock.prototype.server";
 
 const lessonParamsSchema = z.object({
   slug: z.string().min(1),
@@ -900,12 +902,33 @@ export async function action({ params, request }: Route.ActionArgs) {
         if (!parsed.success) {
           return { ok: false, error: "Enter a comment before posting." };
         }
-        createComment(
+        const created = createComment(
           currentUserId,
           lessonId,
           parsed.data.parentId ?? null,
           parsed.data.body
         );
+        // PROTOTYPE (Knock spike, #24): Discussion Reply → question author.
+        // Inline and awaited only to make the spike observable; where and how
+        // triggering really happens is still fog on the map.
+        if (created.parentId !== null) {
+          const parent = getCommentById(created.parentId)!;
+          const [author, replier] = [parent.userId, currentUserId].map((id) =>
+            db.select().from(users).where(eq(users.id, id)).get()!
+          );
+          const lesson = db.select().from(lessons).where(eq(lessons.id, lessonId)).get()!;
+          const run = await triggerDiscussionReply({
+            questionAuthor: author,
+            replier,
+            lessonTitle: lesson.title,
+            lessonUrl: `/courses/${slug}/lessons/${lessonId}`,
+            replyExcerpt: created.body.slice(0, 140),
+          }).catch((error) => {
+            console.error("[knock prototype] trigger failed", error);
+            return null;
+          });
+          console.log("[knock prototype] discussion-reply", run);
+        }
         return { ok: true };
       }
 
